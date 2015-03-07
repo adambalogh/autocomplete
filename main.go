@@ -9,7 +9,13 @@ import (
 )
 
 func main() {
-	a := autocomp.New()
+	big, err := os.Open("big.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	a := autocomp.New(big)
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {

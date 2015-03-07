@@ -1,9 +1,8 @@
 package autocomp
 
 import (
-	"fmt"
+	"io"
 	"io/ioutil"
-	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -28,20 +27,14 @@ type Autocomp struct {
 	WordTuples map[string]Counter
 }
 
-func New() *Autocomp {
+func New(r io.Reader) *Autocomp {
 	a := new(Autocomp)
 	a.Words = make([]string, 0)
 	a.WordsCount = make(map[string]int)
 	a.WordTuples = make(map[string]Counter)
 
-	big, err := os.Open("big.txt")
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-
 	w := regexp.MustCompile(`'?([a-zA-z'-]+)'?`)
-	all, _ := ioutil.ReadAll(big)
+	all, _ := ioutil.ReadAll(r)
 	words := w.FindAllString(string(all), -1)
 
 	for _, word := range words {
