@@ -11,21 +11,22 @@ import (
 // Counter is used to count the number of words.
 type Counter map[string]int
 
-// WordPrediction contains the predicted word, and it's count
-// a higher count value means that the word is more likely.
+// WordPrediction is a prediction for a word, where
+// higher Count means higher probability.
 type WordPrediction struct {
 	Word  string
 	Count int
 }
 
-// ByCount sorts WordPredictions by their Count value.
+// ByCount sorts WordPredictions by their probability.
 type ByCount []WordPrediction
 
 func (c ByCount) Len() int           { return len(c) }
 func (c ByCount) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 func (c ByCount) Less(i, j int) bool { return c[i].Count > c[j].Count }
 
-// Autocomp is a Markov Chain model that can be used for autocompletion.
+// Autocomp is a Markov Chain model that can be used for predicting
+// what word is being typed.
 type Autocomp struct {
 	// Words contains all the words in the model
 	Words []string
@@ -66,8 +67,8 @@ func New(r io.Reader) *Autocomp {
 	return a
 }
 
-// predictWord returns the top count words fron the wordCount map,
-// that start with the string prefix.
+// predictWord returns the words with the highest probability,
+// that start with the given prefix.
 func predictWord(wordsCount Counter, prefix string, count int) []WordPrediction {
 	predictions := make([]WordPrediction, 0)
 	for word, count := range wordsCount {
@@ -77,17 +78,17 @@ func predictWord(wordsCount Counter, prefix string, count int) []WordPrediction 
 		}
 	}
 	sort.Sort(ByCount(predictions))
-	if len(predictions) > count {
+	if len(predictions) >= count {
 		return predictions[:count]
 	}
 	return predictions
 }
 
-// Predict returns the most likely count words
+// Predict returns the most likely words the user is typing.
 //
 // line could contain 1 or more words, the prediction will always
-// be aimed at the last word, and if there are more than 1 words,
-// the algorithm will use the previous word to predict better words.
+// be aimed at the last word. If there are more than 1 words given,
+// the algorithm will use the last but one word to predict the current word.
 func (a *Autocomp) Predict(line string, count int) []WordPrediction {
 	words := strings.Fields(line)
 	if len(words) < 2 {
@@ -96,8 +97,8 @@ func (a *Autocomp) Predict(line string, count int) []WordPrediction {
 	return a.PredictNextWord(words[len(words)-2], words[len(words)-1], count)
 }
 
-// PredictNextWord returns the most likely word that has the prefix start,
-// given that the previous word was first
+// PredictNextWord returns the most likely word that has the given prefix,
+// given the previous word
 func (a *Autocomp) PredictNextWord(first, second string, count int) []WordPrediction {
 	return predictWord(a.WordTuples[first], second, count)
 }
