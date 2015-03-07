@@ -62,7 +62,7 @@ func New() *Autocomp {
 	return a
 }
 
-func predictWord(wordsCount map[string]int, prefix string, count int) []WordPrediction {
+func predictWord(wordsCount Counter, prefix string, count int) []WordPrediction {
 	predictions := make([]WordPrediction, 0)
 	for word, count := range wordsCount {
 		if strings.HasPrefix(word, prefix) {
