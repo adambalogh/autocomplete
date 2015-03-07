@@ -13,7 +13,7 @@ var newtests = []struct {
 		"short text for short test for you",
 		Autocomp{
 			[]string{"short", "text", "for", "short", "test", "for", "you"},
-			map[string]int{
+			Counter{
 				"short": 2,
 				"text":  1,
 				"for":   2,
@@ -21,11 +21,11 @@ var newtests = []struct {
 				"you":   1,
 			},
 			map[string]Counter{
-				"short": map[string]int{"text": 1, "test": 1},
-				"text":  map[string]int{"for": 1},
-				"for":   map[string]int{"short": 1, "you": 1},
-				"test":  map[string]int{"for": 1},
-				"you":   map[string]int{},
+				"short": Counter{"text": 1, "test": 1},
+				"text":  Counter{"for": 1},
+				"for":   Counter{"short": 1, "you": 1},
+				"test":  Counter{"for": 1},
+				"you":   Counter{},
 			},
 		},
 	},

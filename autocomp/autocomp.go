@@ -42,7 +42,7 @@ type Autocomp struct {
 func New(r io.Reader) *Autocomp {
 	a := new(Autocomp)
 	a.Words = make([]string, 0)
-	a.WordsCount = make(map[string]int)
+	a.WordsCount = make(Counter)
 	a.WordTuples = make(map[string]Counter)
 
 	w := regexp.MustCompile(`'?([a-zA-z'-]+)'?`)
@@ -59,7 +59,7 @@ func New(r io.Reader) *Autocomp {
 		first := a.Words[i]
 		second := a.Words[i+1]
 		if a.WordTuples[first] == nil {
-			a.WordTuples[first] = make(map[string]int)
+			a.WordTuples[first] = make(Counter)
 		}
 		a.WordTuples[first][second]++
 	}
