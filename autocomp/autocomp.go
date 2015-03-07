@@ -8,8 +8,12 @@ import (
 	"strings"
 )
 
-// Counter is used to count the number of words.
+// Counter is used to count the number of individual words.
 type Counter map[string]int
+
+func (c Counter) Add(word string) {
+	c[word]++
+}
 
 // WordPrediction is a prediction for a word, where
 // higher Count means higher probability.
@@ -52,7 +56,7 @@ func New(r io.Reader) *Autocomp {
 	for _, word := range words {
 		word = strings.ToLower(word)
 		a.Words = append(a.Words, word)
-		a.WordsCount[word]++
+		a.WordsCount.Add(word)
 	}
 
 	for i := 0; i < len(a.Words)-1; i++ {
@@ -61,7 +65,7 @@ func New(r io.Reader) *Autocomp {
 		if a.WordTuples[first] == nil {
 			a.WordTuples[first] = make(Counter)
 		}
-		a.WordTuples[first][second]++
+		a.WordTuples[first].Add(second)
 	}
 
 	return a
