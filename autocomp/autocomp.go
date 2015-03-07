@@ -25,14 +25,14 @@ func (c ByCount) Less(i, j int) bool { return c[i].Count > c[j].Count }
 type Autocomp struct {
 	Words      []string
 	WordsCount Counter
-	WordTuples map[string]map[string]int
+	WordTuples map[string]Counter
 }
 
 func New() *Autocomp {
 	a := new(Autocomp)
 	a.Words = make([]string, 0)
 	a.WordsCount = make(map[string]int)
-	a.WordTuples = make(map[string]map[string]int)
+	a.WordTuples = make(map[string]Counter)
 
 	big, err := os.Open("big.txt")
 	if err != nil {
