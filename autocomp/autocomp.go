@@ -27,8 +27,13 @@ func (c ByCount) Less(i, j int) bool { return c[i].Count > c[j].Count }
 
 // Autocomp is a Markov Chain model that can be used for autocompletion.
 type Autocomp struct {
-	Words      []string
+	// Words contains all the words in the model
+	Words []string
+	// WordsCount counts each word
 	WordsCount Counter
+	// WordTuples counts how many times each word is followed by a specific word
+	//
+	// e.g. "this is" -> WordTuples["this"]["is"] == 1
 	WordTuples map[string]Counter
 }
 
