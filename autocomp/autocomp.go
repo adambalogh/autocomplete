@@ -40,7 +40,7 @@ func New() *Autocomp {
 		return nil
 	}
 
-	w := regexp.MustCompile("[a-z]+")
+	w := regexp.MustCompile(`'?([a-zA-z'-]+)'?`)
 	all, _ := ioutil.ReadAll(big)
 	words := w.FindAllString(string(all), -1)
 
