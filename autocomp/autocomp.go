@@ -8,25 +8,31 @@ import (
 	"strings"
 )
 
+// Counter is used to count the number of words.
 type Counter map[string]int
 
+// WordPrediction contains the predicted word, and it's count
+// a higher count value means that the word is more likely.
 type WordPrediction struct {
 	Word  string
 	Count int
 }
 
+// ByCount sorts WordPredictions by their Count value.
 type ByCount []WordPrediction
 
 func (c ByCount) Len() int           { return len(c) }
 func (c ByCount) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 func (c ByCount) Less(i, j int) bool { return c[i].Count > c[j].Count }
 
+// Autocomp is a Markov Chain model that can be used for autocompletion.
 type Autocomp struct {
 	Words      []string
 	WordsCount Counter
 	WordTuples map[string]Counter
 }
 
+// New returns a model that was trained on the text read from r.
 func New(r io.Reader) *Autocomp {
 	a := new(Autocomp)
 	a.Words = make([]string, 0)
@@ -55,6 +61,8 @@ func New(r io.Reader) *Autocomp {
 	return a
 }
 
+// predictWord returns the top count words fron the wordCount map,
+// that start with the string prefix.
 func predictWord(wordsCount Counter, prefix string, count int) []WordPrediction {
 	predictions := make([]WordPrediction, 0)
 	for word, count := range wordsCount {
@@ -70,6 +78,11 @@ func predictWord(wordsCount Counter, prefix string, count int) []WordPrediction 
 	return predictions
 }
 
+// Predict returns the most likely count words
+//
+// line could contain 1 or more words, the prediction will always
+// be aimed at the last word, and if there are more than 1 words,
+// the algorithm will use the previous word to predict better words.
 func (a *Autocomp) Predict(line string, count int) []WordPrediction {
 	words := strings.Fields(line)
 	if len(words) < 2 {
@@ -78,6 +91,8 @@ func (a *Autocomp) Predict(line string, count int) []WordPrediction {
 	return a.PredictNextWord(words[len(words)-2], words[len(words)-1], count)
 }
 
+// PredictNextWord returns the most likely word that has the prefix start,
+// given that the previous word was first
 func (a *Autocomp) PredictNextWord(first, second string, count int) []WordPrediction {
 	return predictWord(a.WordTuples[first], second, count)
 }
